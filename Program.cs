@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,7 +18,9 @@ public class Program
         {
             var host = CreateHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope()) {
-                DbInitializer.Initialize(scope.ServiceProvider.GetRequiredService<MijnContext>());
+                var db = scope.ServiceProvider.GetRequiredService<MijnContext>();
+                db.Database.Migrate();
+                DbInitializer.Initialize(db);
             }
             host.Run();
         }
